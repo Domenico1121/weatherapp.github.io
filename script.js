@@ -27,8 +27,6 @@ function getWeather() {
                 const temperatureCelsius = temperatureKelvin - 273.15; // Conversion to Celsius
 
                 const humidity = data.main.humidity;
-                const windSpeed = data.wind.speed;
-                const windDirection = data.wind.deg;
 
                 const description = data.weather[0].description;
 
