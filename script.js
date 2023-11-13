@@ -22,27 +22,56 @@ function getWeather() {
             if (data.cod === '404') {
                 weatherResult.innerHTML = `<p>City not found. Please enter a valid city name.</p>`;
             } else {
+                const cityName = data.name;
                 const temperatureKelvin = data.main.temp;
                 const temperatureCelsius = temperatureKelvin - 273.15; // Conversion to Celsius
 
                 const humidity = data.main.humidity;
                 const windSpeed = data.wind.speed;
+                const windDirection = data.wind.deg;
 
                 const description = data.weather[0].description;
-                const weatherIcon = data.weather[0].icon;
 
-                let rainInfo = '';
-                if (data.rain && data.rain['1h']) {
-                    rainInfo = `Rain (last 1h): ${data.rain['1h']} mm`;
+                let precipitation = '';
+                if (data.rain) {
+                    precipitation = `Rain: ${data.rain['1h']} mm`;
+                } else if (data.snow) {
+                    precipitation = `Snow: ${data.snow['1h']} mm`;
                 }
 
+                const pressure = data.main.pressure;
+                const visibility = data.visibility;
+
+                const sunriseTimestamp = data.sys.sunrise * 1000; // Convert to milliseconds
+                const sunsetTimestamp = data.sys.sunset * 1000; // Convert to milliseconds
+
+                const sunrise = new Date(sunriseTimestamp);
+                const sunset = new Date(sunsetTimestamp);
+
+                const uvIndex = data.uvi;
+
+                let airQuality = '';
+                if (data.main.aqi) {
+                    airQuality = `Air Quality Index: ${data.main.aqi}`;
+                }
+
+                const moonPhase = ''; // Moon phase data may not be available in the current weather API response
+
                 // Display the weather data with additional information
-                weatherResult.innerHTML = `<p>Temperature: ${temperatureCelsius.toFixed(2)} °C</p>
+                weatherResult.innerHTML = `<p>Weather in ${cityName}</p>
+                                           <p>Temperature: ${temperatureCelsius.toFixed(2)} °C</p>
                                            <p>Humidity: ${humidity}%</p>
                                            <p>Wind Speed: ${windSpeed} m/s</p>
+                                           <p>Wind Direction: ${windDirection}°</p>
                                            <p>Description: ${description}</p>
-                                           <p>${rainInfo}</p>
-                                           <img src="http://openweathermap.org/img/w/${weatherIcon}.png" alt="Weather Icon">`;
+                                           ${precipitation ? `<p>${precipitation}</p>` : ''}
+                                           <p>Pressure: ${pressure} hPa</p>
+                                           <p>Visibility: ${visibility} meters</p>
+                                           <p>Sunrise: ${sunrise.toLocaleTimeString()}</p>
+                                           <p>Sunset: ${sunset.toLocaleTimeString()}</p>
+                                           ${uvIndex ? `<p>UV Index: ${uvIndex}</p>` : ''}
+                                           ${airQuality ? `<p>${airQuality}</p>` : ''}
+                                           ${moonPhase ? `<p>Moon Phase: ${moonPhase}</p>` : ''}`;
             }
         })
         .catch(error => {
